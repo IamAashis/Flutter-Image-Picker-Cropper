@@ -30,12 +30,13 @@ class _MyImagePickerState extends State<MyImagePicker> {
           maxWidth: 700,
           maxHeight: 700,
         );
+
         if (croppedFile != null) {
           final cacheDirectory = path.dirname(pickedFile.path);
           final compressedFileName =
               'compressed_${DateTime.now().millisecondsSinceEpoch}.jpg';
           final compressedFilePath =
-              path.join(cacheDirectory, compressedFileName);
+          path.join(cacheDirectory, compressedFileName);
 
           final compressedFile = await FlutterImageCompress.compressAndGetFile(
             croppedFile.path,
@@ -61,6 +62,43 @@ class _MyImagePickerState extends State<MyImagePicker> {
     }
   }
 
+  Future<bool> _hasCameraPermission() async {
+    if (Platform.isAndroid || Platform.isIOS) {
+      return true;
+    } else {
+      return true;
+    }
+  }
+
+  void _showImagePickerDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Picker"),
+          content: Text("Select image picker type."),
+          actions: <Widget>[
+            _buildTextButton("Camera", () {
+              _getImage(1);
+              Navigator.pop(context);
+            }),
+            _buildTextButton("Gallery", () {
+              _getImage(2);
+              Navigator.pop(context);
+            }),
+          ],
+        );
+      },
+    );
+  }
+
+  TextButton _buildTextButton(String label, VoidCallback onPressed) {
+    return TextButton(
+      child: Text(label),
+      onPressed: onPressed,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,44 +109,16 @@ class _MyImagePickerState extends State<MyImagePicker> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            imageFile != null
-                ? Image.file(
-                    File(imageFile!.path),
-                    height: MediaQuery.of(context).size.height / 2,
-                  )
-                : Text("Image editor"),
+            _buildImageOrPlaceholder(),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          // Check camera permissions before showing the dialog
+          final currentContext = context;
+
           if (await _hasCameraPermission()) {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Text("Picker"),
-                  content: Text("Select image picker type."),
-                  actions: <Widget>[
-                    TextButton(
-                      child: Text("Camera"),
-                      onPressed: () {
-                        _getImage(1);
-                        Navigator.pop(context);
-                      },
-                    ),
-                    TextButton(
-                      child: Text("Gallery"),
-                      onPressed: () {
-                        _getImage(2);
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ],
-                );
-              },
-            );
+            _showImagePickerDialog(currentContext);
           } else {
             print("Camera permission not granted!");
           }
@@ -119,11 +129,12 @@ class _MyImagePickerState extends State<MyImagePicker> {
     );
   }
 
-  Future<bool> _hasCameraPermission() async {
-    if (Platform.isAndroid || Platform.isIOS) {
-      return true;
-    } else {
-      return true;
-    }
+  Widget _buildImageOrPlaceholder() {
+    return imageFile != null
+        ? Image.file(
+      File(imageFile!.path),
+      height: MediaQuery.of(context).size.height / 2,
+    )
+        : Text("Image editor");
   }
 }
