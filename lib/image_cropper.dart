@@ -36,7 +36,7 @@ class _MyImagePickerState extends State<MyImagePicker> {
           final compressedFileName =
               'compressed_${DateTime.now().millisecondsSinceEpoch}.jpg';
           final compressedFilePath =
-          path.join(cacheDirectory, compressedFileName);
+              path.join(cacheDirectory, compressedFileName);
 
           final compressedFile = await FlutterImageCompress.compressAndGetFile(
             croppedFile.path,
@@ -94,8 +94,8 @@ class _MyImagePickerState extends State<MyImagePicker> {
 
   TextButton _buildTextButton(String label, VoidCallback onPressed) {
     return TextButton(
-      child: Text(label),
       onPressed: onPressed,
+      child: Text(label),
     );
   }
 
@@ -132,9 +132,9 @@ class _MyImagePickerState extends State<MyImagePicker> {
   Widget _buildImageOrPlaceholder() {
     return imageFile != null
         ? Image.file(
-      File(imageFile!.path),
-      height: MediaQuery.of(context).size.height / 2,
-    )
+            File(imageFile!.path),
+            height: MediaQuery.of(context).size.height / 2,
+          )
         : Text("Image editor");
   }
 }
